@@ -1,5 +1,5 @@
 {% set name = "pngquant" %}
-{% set version = "2.15.0" %}
+{% set version = "2.15.1" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/kornelski/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: 263f1dee605a3e300fd4df957476ca3c125de6b8d001c2c43e31fe469a710712
+  sha256: 24856b28aca47ed78633fa625eb74b85782d62dacc4bca634fcedf2f6e95c4b7
 
 build:
   skip: true  # [win]
