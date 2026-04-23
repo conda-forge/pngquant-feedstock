@@ -1,0 +1,60 @@
+context:
+  name: pngquant
+  version: 3.0.3
+
+package:
+  name: ${{ name|lower }}
+  version: ${{ version }}
+
+source:
+  - url: https://github.com/kornelski/${{ name }}/archive/${{ version }}.tar.gz
+    sha256: ddd8889a9c269ba454d0c5e4f7167948d55d77c4570b23f671809fd3a68b6822
+
+build:
+  number: 0
+  skip: win # https://github.com/conda-forge/conda-smithy/issues/2239#issuecomment-2898757737
+  script:
+    - DEP_NAME="imagequant-sys" && VERSION=$(yq e ".dependencies.\"${DEP_NAME}\".version" Cargo.toml) && sed -i.bak "s/${DEP_NAME} = { version = \"${VERSION}\", path = [^}]*}/${DEP_NAME} = \"${VERSION}\"/" Cargo.toml # Use crates.io version
+    - cat Cargo.toml
+    # - echo "[patch.crates-io]" >> Cargo.toml
+    # - echo "libpng-sys = { path = \"/Users/bela/Documents/conda-forge/feedstocks/pngquant-feedstock/rust-libpng-sys\" }" >> Cargo.toml
+    - if: win
+      then:
+        - cargo install --path . --root "%LIBRARY_PREFIX%"
+      else:
+        - PKG_CONFIG_ALLOW_CROSS=1 pkg-config --debug --atleast-version=1.6 --libs --cflags libpng
+        - PKG_CONFIG_ALLOW_CROSS=1 cargo install --path . --root "$PREFIX" -vvv
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+
+requirements:
+  ignore_run_exports:
+      from_package:
+        - zlib
+  build:
+    - go-yq
+    - pkg-config
+    - cargo-bundle-licenses
+    - ${{ compiler('rust') }}
+    - ${{ stdlib('c') }}
+    - ${{ compiler('c') }}
+  host:
+    - libpng
+    - zlib
+    - pkg-config
+
+tests:
+  - script:
+      - pngquant --version
+
+about:
+  summary: Lossy PNG compressor — pngquant command based on libimagequant library
+  license: GPL-3.0-or-later
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  homepage: https://pngquant.org/
+
+extra:
+  recipe-maintainers:
+    - "0xbe7a"
+    - izahn
