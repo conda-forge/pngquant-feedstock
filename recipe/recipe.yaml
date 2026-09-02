@@ -17,7 +17,7 @@ source:
   file_name: pngquant-${{ version }}.tar.gz
 
 build:
-  number: 0
+  number: 1
   script:
     env:
       CARGO_PROFILE_RELEASE_STRIP: symbols
@@ -86,3 +86,6 @@ extra:
   recipe-maintainers:
     - izahn
     - rxm7706
+    - killua156
+    - soapy1
+    - owenlamont
